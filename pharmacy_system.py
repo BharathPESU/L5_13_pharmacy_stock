@@ -22,7 +22,12 @@ def find_patient(name):
     return cur.execute(query, (name,)).fetchall()
 
 def add_stock(drug, units, expiry, batch_log=[]):
-    stock[drug] = {"units": stock.get(drug, {}).get("units", 0) + units, "expiry": expiry}
+    if units <= 0:
+        return len(batch_log)
+    stock[drug] = {
+        "units": stock.get(drug, {}).get("units", 0) + units,
+        "expiry": expiry,
+    }
     batch_log.append((drug, units))
     return len(batch_log)
 
@@ -36,8 +41,15 @@ def dispense(patient_name, drug, units):
         ):
             print("Allergy warning for", patient_name)
             return False
+        if drug not in stock or units <= 0 or stock[drug]["units"] < units:
+            return False
         stock[drug]["units"] -= units
-        prescriptions.append({"patient": patient[0], "drug": drug, "units": units, "time": str(datetime.now())})
+        prescriptions.append({
+            "patient": patient[0],
+            "drug": drug,
+            "units": units,
+            "time": str(datetime.now()),
+        })
         return True
     except:
         return False
