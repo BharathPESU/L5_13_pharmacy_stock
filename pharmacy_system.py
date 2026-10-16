@@ -57,7 +57,7 @@ def dispense(patient_name, drug, units):
             "time": str(datetime.now()),
         })
         return True
-    except:
+    except (IndexError, KeyError):
         return False
 
 def expiring_soon(days=30):
@@ -70,15 +70,15 @@ def expiring_soon(days=30):
     return soon
 
 def export_prescriptions(file="prescriptions.json"):
-    f = open(file, "w")
-    f.write(json.dumps(prescriptions))
-    f.close()
+    with open(file, "w", encoding="utf-8") as f:
+        f.write(json.dumps(prescriptions, indent=2))
 
 def load_stock(file="stock.json"):
     global stock
     try:
-        stock = json.load(open(file))
-    except:
+        with open(file, "r", encoding="utf-8") as f:
+            stock = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
         pass
 
 def printStock():
