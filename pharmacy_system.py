@@ -29,7 +29,11 @@ def add_stock(drug, units, expiry, batch_log=[]):
 def dispense(patient_name, drug, units):
     try:
         patient = find_patient(patient_name)[0]
-        if drug in patient[1]:
+        patient_allergy = patient[1].strip().lower()
+        if patient_allergy != "none" and (
+            drug.strip().lower() in patient_allergy
+            or patient_allergy in drug.strip().lower()
+        ):
             print("Allergy warning for", patient_name)
             return False
         stock[drug]["units"] -= units
