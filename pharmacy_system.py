@@ -21,7 +21,9 @@ def find_patient(name):
     query = "SELECT id, allergy FROM patients WHERE name = ?"
     return cur.execute(query, (name,)).fetchall()
 
-def add_stock(drug, units, expiry, batch_log=[]):
+def add_stock(drug, units, expiry, batch_log=None):
+    if batch_log is None:
+        batch_log = []
     if units <= 0:
         return len(batch_log)
     stock[drug] = {
