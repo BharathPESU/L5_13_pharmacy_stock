@@ -43,6 +43,10 @@ def dispense(patient_name, drug, units):
             return False
         if drug not in stock or units <= 0 or stock[drug]["units"] < units:
             return False
+        exp = datetime.strptime(stock[drug]["expiry"], "%Y-%m-%d")
+        if (exp - datetime.now()).days < 0:
+            print("Drug expired:", drug)
+            return False
         stock[drug]["units"] -= units
         prescriptions.append({
             "patient": patient[0],
@@ -58,7 +62,8 @@ def expiring_soon(days=30):
     soon = []
     for d in stock:
         exp = datetime.strptime(stock[d]["expiry"], "%Y-%m-%d")
-        if (exp - datetime.now()).days < days:
+        remaining_days = (exp - datetime.now()).days
+        if 0 <= remaining_days < days:
             soon.append(d)
     return soon
 
